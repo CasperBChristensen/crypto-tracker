@@ -62,6 +62,7 @@ function Header() {
             >
               <MenuItem value={"USD"}>USD</MenuItem>
               <MenuItem value={"EUR"}>EUR</MenuItem>
+              <MenuItem value={"DKK"}>DKK</MenuItem>
             </Select>
           </Toolbar>
         </Container>
