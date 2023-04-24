@@ -1,9 +1,16 @@
 import {
   AppBar,
+  Box,
   Button,
   Container,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
   MenuItem,
   Select,
+  TextField,
   Toolbar,
   Typography,
 } from "@material-ui/core";
@@ -12,6 +19,7 @@ import {
   makeStyles,
   ThemeProvider,
 } from "@material-ui/core/styles";
+import { useState } from "react";
 import { useHistory } from "react-router-dom";
 import { CryptoState } from "../CryptoContext";
 
@@ -22,11 +30,6 @@ const useStyles = makeStyles((theme) => ({
     fontFamily: "Montserrat",
     fontWeight: "bold",
     cursor: "pointer",
-  },
-  loginButton: {
-    color: "gold",
-    borderColor: "gold",
-    marginLeft: theme.spacing(2),
   },
 }));
 
@@ -42,15 +45,34 @@ const darkTheme = createTheme({
 function Header() {
   const classes = useStyles();
   const { currency, setCurrency } = CryptoState();
-
   const history = useHistory();
+  const [openLogin, setOpenLogin] = useState(false);
+  const [openSignup, setOpenSignup] = useState(false);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  const handleLoginOpen = () => {
+    setOpenLogin(true);
+  };
+
+  const handleLoginClose = () => {
+    setOpenLogin(false);
+  };
+
+  const handleSignupOpen = () => {
+    setOpenSignup(true);
+  };
+
+  const handleSignupClose = () => {
+    setOpenSignup(false);
+  };
 
   const handleLogin = () => {
-    // handle login functionality here
+    // Handle login functionality here
   };
 
   const handleSignup = () => {
-    // handle signup functionality here
+    // Handle signup functionality here
   };
 
   return (
@@ -65,7 +87,12 @@ function Header() {
             >
               Casper's Crypto Corner
             </Typography>
-            {/* <Button color="inherit">Login</Button> */}
+            <Button color="inherit" onClick={handleLoginOpen}>
+              Login
+            </Button>
+            <Button color="inherit" onClick={handleSignupOpen}>
+              Signup
+            </Button>
             <Select
               variant="outlined"
               labelId="demo-simple-select-label"
@@ -78,23 +105,81 @@ function Header() {
               <MenuItem value={"EUR"}>EUR</MenuItem>
               <MenuItem value={"DKK"}>DKK</MenuItem>
             </Select>
-            <Button
-              className={classes.loginButton}
-              variant="outlined"
-              onClick={handleLogin}
-            >
-              Login
-            </Button>
-            <Button
-              className={classes.loginButton}
-              variant="outlined"
-              onClick={handleSignup}
-            >
-              Signup
-            </Button>
           </Toolbar>
         </Container>
       </AppBar>
+
+      <Dialog open={openLogin} onClose={handleLoginClose}>
+        <DialogTitle>Login</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Enter your login information here.
+          </DialogContentText>
+          <TextField
+            autoFocus
+            margin="dense"
+            id="email"
+            label="Email Address"
+            type="email"
+            fullWidth
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
+          <TextField
+            margin="dense"
+            id="password"
+            label="Password"
+            type="password"
+            fullWidth
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleLoginClose} color="secondary">
+            Cancel
+          </Button>
+          <Button onClick={handleLogin} color="primary">
+            Login
+          </Button>
+        </DialogActions>
+      </Dialog>
+      
+      <Dialog open={openSignup} onClose={handleSignupClose}>
+        <DialogTitle>Signup</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Enter your login information here.
+          </DialogContentText>
+          <TextField
+            autoFocus
+            margin="dense"
+            id="email"
+            label="Email Address"
+            type="email"
+            fullWidth
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
+          <TextField
+            margin="dense"
+            id="password"
+            label="Password"
+            type="password"
+            fullWidth
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleSignupClose} color="secondary">
+            Cancel
+          </Button>
+          <Button onClick={handleSignup} color="primary">
+            Signup
+          </Button>
+        </DialogActions>
+      </Dialog>
     </ThemeProvider>
   );
 }
