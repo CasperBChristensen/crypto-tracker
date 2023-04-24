@@ -1,5 +1,6 @@
 import {
   AppBar,
+  Button,
   Container,
   MenuItem,
   Select,
@@ -22,6 +23,11 @@ const useStyles = makeStyles((theme) => ({
     fontWeight: "bold",
     cursor: "pointer",
   },
+  loginButton: {
+    color: "gold",
+    borderColor: "gold",
+    marginLeft: theme.spacing(2),
+  },
 }));
 
 const darkTheme = createTheme({
@@ -38,6 +44,14 @@ function Header() {
   const { currency, setCurrency } = CryptoState();
 
   const history = useHistory();
+
+  const handleLogin = () => {
+    // handle login functionality here
+  };
+
+  const handleSignup = () => {
+    // handle signup functionality here
+  };
 
   return (
     <ThemeProvider theme={darkTheme}>
@@ -64,6 +78,20 @@ function Header() {
               <MenuItem value={"EUR"}>EUR</MenuItem>
               <MenuItem value={"DKK"}>DKK</MenuItem>
             </Select>
+            <Button
+              className={classes.loginButton}
+              variant="outlined"
+              onClick={handleLogin}
+            >
+              Login
+            </Button>
+            <Button
+              className={classes.loginButton}
+              variant="outlined"
+              onClick={handleSignup}
+            >
+              Signup
+            </Button>
           </Toolbar>
         </Container>
       </AppBar>
