@@ -146,6 +146,7 @@ export default function CoinsTable() {
                         color: "black",
                         fontWeight: "700",
                         fontFamily: "Montserrat",
+                        width: head === "Coin" ? "40%" : "20%",
                       }}
                       key={head}
                       align={head === "Coin" ? "" : "right"}
@@ -155,6 +156,12 @@ export default function CoinsTable() {
                       onClick={() => handleSort(head.toLowerCase())}
                     >
                       {head}
+                      {sorting.field === head.toLowerCase() &&
+                        (sorting.order === "asc" ? (
+                          <span>&#x25B2;</span>
+                        ) : (
+                          <span>&#x25BC;</span>
+                        ))}
                     </TableCell>
                   ))}
                 </TableRow>
