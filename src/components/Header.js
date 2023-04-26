@@ -1,6 +1,5 @@
 import {
   AppBar,
-  Box,
   Button,
   Container,
   Dialog,

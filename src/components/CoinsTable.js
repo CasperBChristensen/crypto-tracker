@@ -30,6 +30,8 @@ export default function CoinsTable() {
   const [loading, setLoading] = useState(false);
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
+  const [sorting, setSorting] = useState({ field: "market_cap", order: "desc" });
+
 
   const { currency, symbol } = CryptoState();
 
@@ -75,12 +77,45 @@ export default function CoinsTable() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currency]);
 
+
   const handleSearch = () => {
-    return coins.filter(
-      (coin) =>
-        coin.name.toLowerCase().includes(search) ||
-        coin.symbol.toLowerCase().includes(search)
+    const sortedData = coins.sort((a, b) => {
+      const isAsc = sorting.order === "asc";
+      if (sorting.field === "coin") {
+        return isAsc ? a.name.localeCompare(b.name) : b.name.localeCompare(a.name);
+      } else if (sorting.field === "price") {
+        return isAsc
+          ? a.current_price - b.current_price
+          : b.current_price - a.current_price;
+      } else if (sorting.field === "24h change") {
+        return isAsc
+          ? a.price_change_percentage_24h - b.price_change_percentage_24h
+          : b.price_change_percentage_24h - a.price_change_percentage_24h;
+      } else {
+        return isAsc
+          ? a.market_cap - b.market_cap
+          : b.market_cap - a.market_cap;
+      }
+    });
+  
+    const filteredData = sortedData.filter((row) =>
+      row.name.toLowerCase().includes(search.toLowerCase())
     );
+  
+    return filteredData;
+  };
+  
+  // const handleSearch = () => {
+  //   return coins.filter(
+  //     (coin) =>
+  //       coin.name.toLowerCase().includes(search) ||
+  //       coin.symbol.toLowerCase().includes(search)
+  //   );
+  // };
+
+  const handleSort = (field) => {
+    const isAsc = sorting.field === field && sorting.order === "asc";
+    setSorting({ field: field, order: isAsc ? "desc" : "asc" });
   };
 
   return (
@@ -114,6 +149,10 @@ export default function CoinsTable() {
                       }}
                       key={head}
                       align={head === "Coin" ? "" : "right"}
+                      sortDirection={
+                        sorting.field === head.toLowerCase() ? sorting.order : false
+                      }
+                      onClick={() => handleSort(head.toLowerCase())}
                     >
                       {head}
                     </TableCell>
