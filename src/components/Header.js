@@ -21,6 +21,7 @@ import {
 import { useState } from "react";
 import { useHistory } from "react-router-dom";
 import { CryptoState } from "../CryptoContext";
+import { firebaseConfig, database } from "../config/firebase";
 
 const useStyles = makeStyles((theme) => ({
   title: {
@@ -70,8 +71,19 @@ function Header() {
     // Handle login functionality here
   };
 
-  const handleSignup = () => {
-    console.log(email, password);
+  const handleSignup = (email, password, name) => {
+    firebaseConfig.createUserWithEmailAndPassword(email, password)
+    .then((userCredential) => {
+      const uid = userCredential.user;
+      database.ref(`users/${uid}`).set({
+        name: name,
+        email: email,
+        password: password,
+      });
+    })
+    .catch((error) => {
+      console.log(error);
+    });
   };
 
   return (
@@ -148,7 +160,7 @@ function Header() {
         <DialogTitle>Signup</DialogTitle>
         <DialogContent>
           <DialogContentText>
-            Enter your login information here.
+            Enter your signup information here.
           </DialogContentText>
           <TextField
             autoFocus
