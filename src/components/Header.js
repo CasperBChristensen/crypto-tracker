@@ -47,8 +47,10 @@ function Header() {
   const history = useHistory();
   const [openLogin, setOpenLogin] = useState(false);
   const [openSignup, setOpenSignup] = useState(false);
+  const [username, setUserName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loggedIn, setLoggedIn] = useState(false);
 
   const handleLoginOpen = () => {
     setOpenLogin(true);
@@ -67,11 +69,62 @@ function Header() {
   };
 
   const handleLogin = () => {
-    // Handle login functionality here
+
+    if (email === "" || password === "") {
+      alert("Please enter your email and password.");
+      return;
+    }
+
+    setLoggedIn(true);
+
+    // Code for checking if user exists in database
+
+
+    if (loggedIn === true) {
+      // Code for logging in
+      console.log("Logged in!");
+      // Hide login and signup buttons
+      var loginButton = document.getElementById("loginButton");
+      var signupButton = document.getElementById("signupButton");
+      loginButton.style.display = "none";
+      signupButton.style.display = "none";
+
+      // Create profile and logout buttons
+      var profileButton = document.createElement("button");
+      profileButton.innerHTML = "Profile";
+      profileButton.id = "profileButton";
+      profileButton.className = "MuiButtonBase-root MuiButton-root MuiButton-text MuiButton-textPrimary MuiButton-textSizeSmall MuiButton-sizeSmall";
+      profileButton.onClick = goToProfile();
+
+      var logoutButton = document.createElement("button");
+      logoutButton.innerHTML = "Logout";
+      logoutButton.id = "logoutButton";
+      logoutButton.className = "MuiButtonBase-root MuiButton-root MuiButton-text MuiButton-textPrimary MuiButton-textSizeSmall MuiButton-sizeSmall";
+      logoutButton.onClick = handleLogout();
+
+      // Add buttons to header
+      var container = document.getElementById("loginContainer");
+      container.appendChild(profileButton);
+      container.appendChild(logoutButton);  
+    }
+
+    // Close login dialog
+    handleLoginClose();
   };
 
   const handleSignup = () => {
-    console.log(email, password);
+    console.log(username, email, password);
+  };
+
+  const handleLogout = () => {
+    // Code for logging out
+
+
+  };
+
+  const goToProfile = () => {
+    // Code for going to profile page
+
   };
 
   return (
@@ -86,12 +139,14 @@ function Header() {
             >
               Casper's Crypto Corner
             </Typography>
-            <Button color="inherit" onClick={handleLoginOpen}>
-              Login
-            </Button>
-            <Button color="inherit" onClick={handleSignupOpen}>
-              Signup
-            </Button>
+            <div id="loginContainer">
+              <Button id="loginButton" color="inherit" onClick={handleLoginOpen}>
+                Login
+              </Button>
+              <Button id="signupButton" color="inherit" onClick={handleSignupOpen}>
+                Signup
+              </Button>
+            </div>
             <Select
               variant="outlined"
               labelId="demo-simple-select-label"
@@ -118,7 +173,7 @@ function Header() {
             autoFocus
             margin="dense"
             id="email"
-            label="Email Address"
+            label="Email Address / Username"
             type="email"
             fullWidth
             value={email}
@@ -148,8 +203,18 @@ function Header() {
         <DialogTitle>Signup</DialogTitle>
         <DialogContent>
           <DialogContentText>
-            Enter your login information here.
+            Enter your signup information here.
           </DialogContentText>
+          <TextField
+            autoFocus
+            margin="dense"
+            id="username"
+            label="Username"
+            type="username"
+            fullWidth
+            value={username}
+            onChange={(e) => setUserName(e.target.value)}
+          />
           <TextField
             autoFocus
             margin="dense"
