@@ -71,7 +71,7 @@ function Header() {
   };
 
   const handleSignup = () => {
-    // Handle signup functionality here
+    console.log(email, password);
   };
 
   return (
