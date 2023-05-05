@@ -79,8 +79,7 @@ function Header() {
 
     // Code for checking if user exists in database
 
-
-    if (loggedIn === true) {
+    if (1 === 1) {
       // Code for logging in
       console.log("Logged in!");
       // Hide login and signup buttons
@@ -94,22 +93,28 @@ function Header() {
       profileButton.innerHTML = "Profile";
       profileButton.id = "profileButton";
       profileButton.className = "MuiButtonBase-root MuiButton-root MuiButton-text MuiButton-textPrimary MuiButton-textSizeSmall MuiButton-sizeSmall";
-      profileButton.onClick = goToProfile();
+      profileButton.addEventListener("click", goToProfile);
 
       var logoutButton = document.createElement("button");
       logoutButton.innerHTML = "Logout";
       logoutButton.id = "logoutButton";
       logoutButton.className = "MuiButtonBase-root MuiButton-root MuiButton-text MuiButton-textPrimary MuiButton-textSizeSmall MuiButton-sizeSmall";
-      logoutButton.onClick = handleLogout();
+      logoutButton.addEventListener("click", handleLogout);
 
       // Add buttons to header
       var container = document.getElementById("loginContainer");
-      container.appendChild(profileButton);
-      container.appendChild(logoutButton);  
+      if (!container.contains(profileButton) && !container.contains(logoutButton)) {
+        container.appendChild(profileButton);
+        container.appendChild(logoutButton);
+      }
+      console.log(profileButton);
+      console.log(logoutButton); 
+      console.log(container);
+
+      // Close login dialog
+      handleLoginClose();
     }
 
-    // Close login dialog
-    handleLoginClose();
   };
 
   const handleSignup = () => {
@@ -118,7 +123,22 @@ function Header() {
 
   const handleLogout = () => {
     // Code for logging out
+    console.log("Logged out!");
+    // Show login and signup buttons
+    var loginButton = document.getElementById("loginButton");
+    var signupButton = document.getElementById("signupButton");
+    loginButton.style.display = "inline-block";
+    signupButton.style.display = "inline-block";
 
+    // Remove profile and logout buttons
+    var profileButton = document.getElementById("profileButton");
+    if(profileButton != null){
+      profileButton.style.display = "none";
+    }
+    var logoutButton = document.getElementById("logoutButton");
+    if(logoutButton != null){
+      logoutButton.style.display = "none";
+    }
 
   };
 
