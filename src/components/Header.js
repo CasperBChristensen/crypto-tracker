@@ -75,41 +75,46 @@ function Header() {
       return;
     }
 
+    // Code for checking if user exists in database
     setLoggedIn(true);
 
-    // Code for checking if user exists in database
-
-    if (1 === 1) {
+    if (loggedIn) {
       // Code for logging in
       console.log("Logged in!");
+      var container = document.getElementById("loginContainer");
       // Hide login and signup buttons
       var loginButton = document.getElementById("loginButton");
       var signupButton = document.getElementById("signupButton");
       loginButton.style.display = "none";
       signupButton.style.display = "none";
 
-      // Create profile and logout buttons
-      var profileButton = document.createElement("button");
-      profileButton.innerHTML = "Profile";
-      profileButton.id = "profileButton";
-      profileButton.className = "MuiButtonBase-root MuiButton-root MuiButton-text MuiButton-textPrimary MuiButton-textSizeSmall MuiButton-sizeSmall";
-      profileButton.addEventListener("click", goToProfile);
-
-      var logoutButton = document.createElement("button");
-      logoutButton.innerHTML = "Logout";
-      logoutButton.id = "logoutButton";
-      logoutButton.className = "MuiButtonBase-root MuiButton-root MuiButton-text MuiButton-textPrimary MuiButton-textSizeSmall MuiButton-sizeSmall";
-      logoutButton.addEventListener("click", handleLogout);
-
-      // Add buttons to header
-      var container = document.getElementById("loginContainer");
-      if (!container.contains(profileButton) && !container.contains(logoutButton)) {
+      // Create profile button if it doesn't exist and show it
+      if (!document.getElementById("profileButton")) {
+        var profileButton = document.createElement("button");
+        profileButton.innerHTML = "Profile";
+        profileButton.id = "profileButton";
+        profileButton.className = "MuiButtonBase-root MuiButton-root MuiButton-text MuiButton-textPrimary MuiButton-textSizeSmall MuiButton-sizeSmall";
+        profileButton.addEventListener("click", goToProfile);
         container.appendChild(profileButton);
-        container.appendChild(logoutButton);
       }
-      console.log(profileButton);
-      console.log(logoutButton); 
-      console.log(container);
+      else {
+        profileButton = document.getElementById("profileButton");
+        profileButton.style.display = "inline-block";
+      }
+
+      // Create logout button if it doesn't exist and show it
+      if (!document.getElementById("logoutButton")) {
+        var logoutButton = document.createElement("button");
+        logoutButton.innerHTML = "Logout";
+        logoutButton.id = "logoutButton";
+        logoutButton.className = "MuiButtonBase-root MuiButton-root MuiButton-text MuiButton-textPrimary MuiButton-textSizeSmall MuiButton-sizeSmall";
+        logoutButton.addEventListener("click", handleLogout);
+        container.appendChild(logoutButton);
+      } 
+      else {
+        logoutButton = document.getElementById("logoutButton");
+        logoutButton.style.display = "inline-block";
+      }
 
       // Close login dialog
       handleLoginClose();
@@ -119,6 +124,16 @@ function Header() {
 
   const handleSignup = () => {
     console.log(username, email, password);
+    if (username === "" || email === "" || password === "") {
+      alert("Please enter your username, email and password.");
+      return;
+    }
+
+    // Code for signing up
+    console.log("Signed up!");
+    // Close signup dialog
+    handleSignupClose();
+
   };
 
   const handleLogout = () => {
