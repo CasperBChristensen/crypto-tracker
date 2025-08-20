@@ -160,6 +160,7 @@ function Header() {
   const goToProfile = () => {
     // Code for going to profile page
 
+    history.push(`/profile`);
   };
 
   return (
