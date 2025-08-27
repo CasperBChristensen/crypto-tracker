@@ -63,19 +63,24 @@ export default function CoinsTable() {
     },
   });
 
-  const fetchCoins = async () => {
-    setLoading(true);
-    const { data } = await axios.get(CoinList(currency));
-
-    setCoins(data);
-    setLoading(false);
-  };
-
   useEffect(() => {
+    const fetchCoins = async () => {
+      setLoading(true);
+      try {
+        const response = await fetch("http://localhost:5000/api/prices");
+        const data = await response.json();
+        setCoins(data);
+        setLoading(false);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+        setLoading(false);
+        return;
+      }
+    };
     fetchCoins();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currency]);
-
+    const interval = setInterval(fetchCoins, 60000); // Fetch every minute
+    return () => clearInterval(interval);
+  }, []);
 
   const handleSearch = () => {
     const sortedData = coins.sort((a, b) => {
