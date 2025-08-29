@@ -67,7 +67,7 @@ export default function CoinsTable() {
     const fetchCoins = async () => {
       setLoading(true);
       try {
-        const response = await fetch("http://localhost:5000/api/prices");
+        const response = await fetch("http://localhost:5000/api/prices?currency=" + currency);
         const data = await response.json();
         setCoins(data);
         setLoading(false);
@@ -80,7 +80,7 @@ export default function CoinsTable() {
     fetchCoins();
     const interval = setInterval(fetchCoins, 60000); // Fetch every minute
     return () => clearInterval(interval);
-  }, []);
+  }, [currency]);
 
   const handleSearch = () => {
     const sortedData = coins.sort((a, b) => {
