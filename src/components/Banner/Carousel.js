@@ -11,15 +11,16 @@ const Carousel = () => {
   const [trending, setTrending] = useState([]);
   const { currency, symbol } = CryptoState();
 
-  const fetchTrendingCoins = async () => {
-    const { data } = await axios.get(TrendingCoins(currency));
-
-    console.log(data);
-    setTrending(data);
-  };
+  
 
   useEffect(() => {
-    fetchTrendingCoins();
+    const fetchTrendingCoins = async () => {
+      const { data } = await axios.get(TrendingCoins(currency));
+
+      console.log(data);
+      setTrending(data);
+    };
+  fetchTrendingCoins();
   }, [currency]);
 
   const useStyles = makeStyles((theme) => ({
