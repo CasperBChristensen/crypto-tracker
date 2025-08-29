@@ -38,7 +38,7 @@ app.get("/api/prices", async (req, res) => {
   }
 
   try {
-    const url = `https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=100&page=1&sparkline=false`;
+    const url = `https://api.coingecko.com/api/v3/coins/markets?vs_currency=${currency}&order=market_cap_desc&per_page=100&page=1&sparkline=false`;
     const response = await fetch(url);
     const data = await response.json();
 
@@ -52,16 +52,17 @@ app.get("/api/prices", async (req, res) => {
 // Single coin details
 app.get("/api/coin/:id", async (req, res) => {
   const { id } = req.params;
-  const key = `coin_${id}`;
+  const { currency = "usd" } = req.query;
+  const key = `coin_${id}_${currency}`;
   const cached = getCache(key);
 
   if (cached) {
-    console.log("Serving coin details from cached data");
+    console.log(`Serving coin details from cache (${currency})`);
     return res.json(cached);
   }
 
   try {
-    const url = `https://api.coingecko.com/api/v3/coins/${id}?currency=usd`;
+    const url = `https://api.coingecko.com/api/v3/coins/${id}?currency=${currency}`;
     const response = await fetch(url);
     const data = await response.json();
 
@@ -75,17 +76,17 @@ app.get("/api/coin/:id", async (req, res) => {
 // Historical data for coin
 app.get("/api/coin/:id/history", async (req, res) => {
   const { id } = req.params;
-  const { days } = req.query; // e.g. ?days=30
-  const key = `coin_${id}_history`;
+  const { days, currency } = req.query; // e.g. ?days=30
+  const key = `coin_${id}_history_${currency}`;
   const cached = getCache(key);
 
   if (cached) {
-    console.log("Serving coin history from cached data");
+    console.log(`Serving coin history from cache (${currency})`);
     return res.json(cached);
   }
 
   try {
-    const url = `https://api.coingecko.com/api/v3/coins/${id}/market_chart?vs_currency=usd&days=${days}`;
+    const url = `https://api.coingecko.com/api/v3/coins/${id}/market_chart?vs_currency=${currency}&days=${days}`;
     const response = await fetch(url);
     const data = await response.json();
 
@@ -98,16 +99,17 @@ app.get("/api/coin/:id/history", async (req, res) => {
 
 // Trending coins
 app.get("/api/trending", async (req, res) => {
-  const key = "trending";
+  const { currency = "usd" } = req.query;
+  const key = `trending_${currency}`;
   const cached = getCache(key);
 
   if (cached) {
-    console.log("Serving trending coins from cached data");
+    console.log(`Serving trending coins from cache (${currency})`);
     return res.json(cached);
   }
 
   try {
-    const url = `https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=gecko_desc&per_page=10&page=1&sparkline=false&price_change_percentage=24h`;
+    const url = `https://api.coingecko.com/api/v3/coins/markets?vs_currency=${currency}&order=gecko_desc&per_page=10&page=1&sparkline=false&price_change_percentage=24h`;
     const response = await fetch(url);
     const data = await response.json();
 
