@@ -11,16 +11,18 @@ const Carousel = () => {
   const [trending, setTrending] = useState([]);
   const { currency, symbol } = CryptoState();
 
-  
-
   useEffect(() => {
     const fetchTrendingCoins = async () => {
-      const { data } = await axios.get(TrendingCoins(currency));
-
-      console.log(data);
-      setTrending(data);
+      try {
+        const response = await fetch("http://localhost:5000/api/trending?currency=" + currency);
+        const data = await response.json();
+        console.log(data);
+        setTrending(data);
+      } catch (error) {
+        console.error("Error fetching trending coins:", error);
+      }
     };
-  fetchTrendingCoins();
+    fetchTrendingCoins();
   }, [currency]);
 
   const useStyles = makeStyles((theme) => ({
