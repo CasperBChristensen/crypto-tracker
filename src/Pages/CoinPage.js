@@ -11,19 +11,20 @@ import { CryptoState } from "../CryptoContext";
 const CoinPage = () => {
   const { id } = useParams();
   const [coin, setCoin] = useState();
-
   const { currency, symbol } = CryptoState();
 
-  const fetchCoin = async () => {
-    const { data } = await axios.get(SingleCoin(id));
-
-    setCoin(data);
-  };
-
   useEffect(() => {
+    const fetchCoin = async () => {
+      try{
+        const response = await fetch("http://localhost:5000/api/coin/" + id);
+        const data = await response.json();
+        setCoin(data);
+      }catch(error){
+        console.error("Error fetching coin data:", error);
+      }
+    };
     fetchCoin();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [id]);
 
   const useStyles = makeStyles((theme) => ({
     container: {
@@ -84,8 +85,8 @@ const CoinPage = () => {
     <div className={classes.container}>
       <div className={classes.sidebar}>
         <img
-          src={coin?.image.large}
-          alt={coin?.name}
+          src={coin?.image?.large || coin?.image?.small || "/placeholder.png"}
+          alt={coin?.name || "Unknown Coin"}
           height="200"
           style={{ marginBottom: 20 }}
         />
@@ -93,7 +94,7 @@ const CoinPage = () => {
           {coin?.name}
         </Typography>
         <Typography variant="subtitle1" className={classes.description}>
-          {ReactHtmlParser(coin?.description.en.split(". ")[0])}.
+          {ReactHtmlParser(coin?.description.en.split(". ")[0]) || "No description available."}
         </Typography>
         <div className={classes.marketData}>
           <span style={{ display: "flex" }}>
