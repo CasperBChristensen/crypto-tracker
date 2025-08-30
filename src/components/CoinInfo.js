@@ -38,18 +38,20 @@ const CoinInfo = ({ coin }) => {
 
   const classes = useStyles();
 
-  const fetchHistoricData = async () => {
-    const { data } = await axios.get(HistoricalChart(coin.id, days, currency));
-    setflag(true);
-    setHistoricData(data.prices);
-  };
-
-  console.log(coin);
-
   useEffect(() => {
+    const fetchHistoricData = async () => {
+      try {
+        const response = await fetch("http://localhost:5000/api/coin/" + coin.id + "/history?days=" + days + "&currency=" + currency);
+        const data = await response.json();
+        console.log(data);
+        setflag(true);
+        setHistoricData(data.prices);
+      } catch (error) {
+        console.error("Error fetching historical data:", error);
+      }
+    };
     fetchHistoricData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [days]);
+  }, [days , currency, coin.id]);
 
   const darkTheme = createTheme({
     palette: {
