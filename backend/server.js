@@ -3,7 +3,7 @@ import cors from "cors";
 import fetch from "node-fetch";
 
 const app = express();
-const port = 5000; // backend runs separately from React dev server
+const port = 5000;
 
 app.use(cors()); // allow React frontend to fetch from backend
 
@@ -30,7 +30,6 @@ app.get("/api/prices", async (req, res) => {
   const { currency = "usd" } = req.query;
   const key = `prices_${currency}`;
   const cached = getCache(key);
-  const now = Date.now();
 
   if (cached) {
     console.log(`Serving prices from cache (${currency})`);
@@ -44,6 +43,7 @@ app.get("/api/prices", async (req, res) => {
 
     setCache(key, data, 60 * 1000); // cache 1 min
     res.json(data);
+    console.log(`Fetched prices from API (${currency})`);
   } catch (err) {
     res.status(500).json({ error: "Failed to fetch prices" });
   }
@@ -57,7 +57,7 @@ app.get("/api/coin/:id", async (req, res) => {
   const cached = getCache(key);
 
   if (cached) {
-    console.log(`Serving coin details from cache (${currency})`);
+    console.log(`Serving coin details from cache (${id}, ${currency})`);
     return res.json(cached);
   }
 
@@ -68,6 +68,7 @@ app.get("/api/coin/:id", async (req, res) => {
 
     setCache(key, data, 5 * 60 * 1000); // cache 5 min
     res.json(data);
+    console.log(`Fetched coin details from API (${id}, ${currency})`);
   } catch (err) {
     res.status(500).json({ error: "Failed to fetch coin details" });
   }
@@ -76,12 +77,12 @@ app.get("/api/coin/:id", async (req, res) => {
 // Historical data for coin
 app.get("/api/coin/:id/history", async (req, res) => {
   const { id } = req.params;
-  const { days, currency } = req.query; // e.g. ?days=30
-  const key = `coin_${id}_history_${currency}`;
+  const { days = 30, currency = "usd" } = req.query; // e.g. ?days=30
+  const key = `coin_${id}_history_${days}_${currency}`;
   const cached = getCache(key);
 
   if (cached) {
-    console.log(`Serving coin history from cache (${currency})`);
+    console.log(`Serving coin history from cache (${id}, ${currency}, ${days})`);
     return res.json(cached);
   }
 
@@ -92,6 +93,7 @@ app.get("/api/coin/:id/history", async (req, res) => {
 
     setCache(key, data, 10 * 60 * 1000); // cache 10 min
     res.json(data);
+    console.log(`Fetched coin history from API (${id}, ${currency}, ${days})`);
   } catch (err) {
     res.status(500).json({ error: "Failed to fetch coin history" });
   }
@@ -115,6 +117,7 @@ app.get("/api/trending", async (req, res) => {
 
     setCache(key, data, 5 * 60 * 1000); // cache 5 min
     res.json(data);
+    console.log(`Fetched trending coins from API (${currency})`);
   } catch (err) {
     res.status(500).json({ error: "Failed to fetch trending coins" });
   }
