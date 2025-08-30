@@ -52,7 +52,7 @@ app.get("/api/prices", async (req, res) => {
 // Single coin details
 app.get("/api/coin/:id", async (req, res) => {
   const { id } = req.params;
-  const { currency = "usd" } = req.query;
+  const { currency = "USD" } = req.query;
   const key = `coin_${id}_${currency}`;
   const cached = getCache(key);
 

@@ -16,8 +16,6 @@ import {
   Table,
   Paper,
 } from "@material-ui/core";
-import axios from "axios";
-import { CoinList } from "../config/api";
 import { useHistory } from "react-router-dom";
 import { CryptoState } from "../CryptoContext";
 
@@ -31,8 +29,6 @@ export default function CoinsTable() {
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
   const [sorting, setSorting] = useState({ field: "market_cap", order: "desc" });
-
-
   const { currency, symbol } = CryptoState();
 
   const useStyles = makeStyles({
