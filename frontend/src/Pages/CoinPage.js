@@ -16,7 +16,7 @@ const CoinPage = () => {
   useEffect(() => {
     const fetchCoin = async () => {
       try{
-        const response = await fetch(SINGLE_COIN(id));
+        const response = await fetch(SINGLE_COIN(id, currency));
         const data = await response.json();
         setCoin(data);
       }catch(error){
