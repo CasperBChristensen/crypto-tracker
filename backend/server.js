@@ -2,6 +2,8 @@ import express from "express";
 import cors from "cors";
 import fetch from "node-fetch";
 
+const path = require("path"); 
+
 const app = express();
 const port = 5000;
 
@@ -126,3 +128,9 @@ app.get("/api/trending", async (req, res) => {
 app.listen(port, () =>
   console.log(`✅ Backend running at http://localhost:${port}`)
 );
+
+app.use(express.static(path.join(__dirname, "../frontend/build")));
+
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "../frontend/build", "index.html"));
+});
