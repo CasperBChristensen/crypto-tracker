@@ -24,7 +24,7 @@ const CoinPage = () => {
       }
     };
     fetchCoin();
-  }, [id]);
+  }, [id, currency]);
 
   const useStyles = makeStyles((theme) => ({
     container: {
