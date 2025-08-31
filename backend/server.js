@@ -2,6 +2,7 @@ import express from "express";
 import fetch from "node-fetch";
 import cors from "cors";
 import path from "path";
+import fs from "fs";
 import { fileURLToPath } from "url";
 
 // Handle __dirname in ES Modules
@@ -129,12 +130,17 @@ app.get("/api/trending", async (req, res) => {
 
 
 // Serve frontend (Production)
-if (process.env.NODE_ENV === "production") {
-  app.use(express.static(path.join(__dirname, "../frontend/build")));
+const frontendBuildPath = path.join(__dirname, "../frontend/build");
+
+if (process.env.NODE_ENV === "production" && fs.existsSync(frontendBuildPath)) {
+  app.use(express.static(frontendBuildPath));
 
   app.get("*", (req, res) => {
-    res.sendFile(path.join(__dirname, "../frontend/build", "index.html"));
+    res.sendFile(path.join(frontendBuildPath, "index.html"));
   });
+}
+else if (process.env.NODE_ENV === "production") {
+  console.warn("Frontend build directory not found. Make sure to build the frontend.");
 }
 
 // Start server
