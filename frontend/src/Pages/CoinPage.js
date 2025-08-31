@@ -6,7 +6,7 @@ import CoinInfo from "../components/CoinInfo";
 import Footer from "../components/Footer";
 import { numberWithCommas } from "../components/CoinsTable";
 import { CryptoState } from "../CryptoContext";
-import API_BASE_URL from "../config";
+import { SINGLE_COIN } from "../config";
 
 const CoinPage = () => {
   const { id } = useParams();
@@ -16,7 +16,7 @@ const CoinPage = () => {
   useEffect(() => {
     const fetchCoin = async () => {
       try{
-        const response = await fetch(`${API_BASE_URL}/api/coin/${id}`);
+        const response = await fetch(SINGLE_COIN(id));
         const data = await response.json();
         setCoin(data);
       }catch(error){

@@ -4,7 +4,7 @@ import AliceCarousel from "react-alice-carousel";
 import { Link } from "react-router-dom";
 import { CryptoState } from "../../CryptoContext";
 import { numberWithCommas } from "../CoinsTable";
-import API_BASE_URL from "../../config";
+import { TRENDING_COINS } from "../../config";
 
 const Carousel = () => {
   const [trending, setTrending] = useState([]);
@@ -13,7 +13,7 @@ const Carousel = () => {
   useEffect(() => {
     const fetchTrendingCoins = async () => {
       try {
-        const response = await fetch(`${API_BASE_URL}/api/trending?currency=${currency}`);
+        const response = await fetch(TRENDING_COINS(currency));
         const data = await response.json();
         console.log(data);
         setTrending(data);
