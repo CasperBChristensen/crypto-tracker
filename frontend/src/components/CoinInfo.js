@@ -9,6 +9,7 @@ import {
 import SelectButton from "./SelectButton";
 import { chartDays } from "../config/data";
 import { CryptoState } from "../CryptoContext";
+import API_BASE_URL from "../config";
 
 const CoinInfo = ({ coin }) => {
   const [historicData, setHistoricData] = useState();
@@ -39,7 +40,7 @@ const CoinInfo = ({ coin }) => {
   useEffect(() => {
     const fetchHistoricData = async () => {
       try {
-        const response = await fetch("http://localhost:5000/api/coin/" + coin.id + "/history?days=" + days + "&currency=" + currency);
+        const response = await fetch(`${API_BASE_URL}/api/coin/${coin.id}/history?days=${days}&currency=${currency}`);
         const data = await response.json();
         console.log(data);
         setflag(true);

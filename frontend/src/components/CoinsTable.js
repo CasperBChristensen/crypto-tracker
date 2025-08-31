@@ -18,6 +18,7 @@ import {
 } from "@material-ui/core";
 import { useHistory } from "react-router-dom";
 import { CryptoState } from "../CryptoContext";
+import API_BASE_URL from "./config";
 
 export function numberWithCommas(x) {
   return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
@@ -63,7 +64,7 @@ export default function CoinsTable() {
     const fetchCoins = async () => {
       setLoading(true);
       try {
-        const response = await fetch("http://localhost:5000/api/prices?currency=" + currency);
+        const response = await fetch(`${API_BASE_URL}/api/coins?currency=${currency}`);
         const data = await response.json();
         setCoins(data);
         setLoading(false);
