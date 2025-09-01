@@ -60,25 +60,25 @@ async function fetchWithCache(url, cacheKey, ttl, res) {
 // API ROUTES
 
 // General coin prices
-// app.get("/api/coins", async (req, res) => {
-//   const { currency = "usd" } = req.query;
-//   const key = `coins_${currency}`;
-//   const cached = getCache(key);
-//   const url = `https://api.coingecko.com/api/v3/coins/markets?vs_currency=${currency}&order=market_cap_desc&per_page=100&page=1&sparkline=false`;
+app.get("/api/coins", async (req, res) => {
+  const { currency = "usd" } = req.query;
+  const key = `coins_${currency}`;
+  const cached = getCache(key);
+  const url = `https://api.coingecko.com/api/v3/coins/markets?vs_currency=${currency}&order=market_cap_desc&per_page=100&page=1&sparkline=false`;
 
-//   if (cached) {
-//     console.log(`Serving prices from cache (${currency})`);
-//     return res.json(cached);
-//   }
+  if (cached) {
+    console.log(`Serving prices from cache (${currency})`);
+    return res.json(cached);
+  }
 
-//   try {
-//     const data = await fetchWithCache(url, key, 2 * 60 * 1000, res); // cache 2 min
-//     res.json(data);
-//     console.log(`Fetched prices from API (${currency})`);
-//   } catch (err) {
-//     res.status(500).json({ error: "Failed to fetch coins" });
-//   }
-// });
+  try {
+    const data = await fetchWithCache(url, key, 2 * 60 * 1000, res); // cache 2 min
+    res.json(data);
+    console.log(`Fetched prices from API (${currency})`);
+  } catch (err) {
+    res.status(500).json({ error: "Failed to fetch coins" });
+  }
+});
 
 // 2. Single coin details
 // app.get("/api/coin/:id", async (req, res) => {
@@ -129,25 +129,25 @@ async function fetchWithCache(url, cacheKey, ttl, res) {
 // });
 
 // 4. Trending coins
-// app.get("/api/trending", async (req, res) => {
-//   const { currency = "usd" } = req.query;
-//   const key = `trending_${currency}`;
-//   const cached = getCache(key);
-//   const url = `https://api.coingecko.com/api/v3/coins/markets?vs_currency=${currency}&order=gecko_desc&per_page=10&page=1&sparkline=false&price_change_percentage=24h`;
+app.get("/api/trending", async (req, res) => {
+  const { currency = "usd" } = req.query;
+  const key = `trending_${currency}`;
+  const cached = getCache(key);
+  const url = `https://api.coingecko.com/api/v3/coins/markets?vs_currency=${currency}&order=gecko_desc&per_page=10&page=1&sparkline=false&price_change_percentage=24h`;
 
-//   if (cached) {
-//     console.log(`Serving trending coins from cache (${currency})`);
-//     return res.json(cached);
-//   }
+  if (cached) {
+    console.log(`Serving trending coins from cache (${currency})`);
+    return res.json(cached);
+  }
 
-//   try {
-//     const data = await fetchWithCache(url, key, 30 * 60 * 1000, res); // cache 30 min
-//     res.json(data);
-//     console.log(`Fetched trending coins from API (${currency})`);
-//   } catch (err) {
-//     res.status(500).json({ error: "Failed to fetch trending coins" });
-//   }
-// });
+  try {
+    const data = await fetchWithCache(url, key, 30 * 60 * 1000, res); // cache 30 min
+    res.json(data);
+    console.log(`Fetched trending coins from API (${currency})`);
+  } catch (err) {
+    res.status(500).json({ error: "Failed to fetch trending coins" });
+  }
+});
 
 
 // Serve frontend (Production)
