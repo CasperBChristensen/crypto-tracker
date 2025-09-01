@@ -27,6 +27,7 @@ export function numberWithCommas(x) {
 export default function CoinsTable() {
   const [coins, setCoins] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
   const [sorting, setSorting] = useState({ field: "market_cap", order: "desc" });
@@ -63,17 +64,31 @@ export default function CoinsTable() {
   useEffect(() => {
     const fetchCoins = async () => {
       setLoading(true);
+      setError(null);
       try {
         const response = await fetch(COINS_LIST(currency));
         const data = await response.json();
-        setCoins(data);
+  
+        if (data.error) {
+          console.warn("API Error:", data.error);
+          setCoins([]); // fallback to empty
+          setError("Live data is temporarily unavailable. Showing empty data.");
+        } else if (!Array.isArray(data)) {
+          // Sometimes API returns unexpected payload
+          setCoins([]);
+          setError("Unexpected response from server.");
+        } else {
+          setCoins(data);
+        }
+      } catch (err) {
+        console.error("Network/Rate-limit error:", err);
+        setCoins([]); // fallback to empty
+        setError("Unable to fetch data. You might be rate-limited.");
+      } finally {
         setLoading(false);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-        setLoading(false);
-        return;
       }
     };
+
     fetchCoins();
     const interval = setInterval(fetchCoins, 60000); // Fetch every minute
     return () => clearInterval(interval);
@@ -134,6 +149,11 @@ export default function CoinsTable() {
           style={{ marginBottom: 20, width: "100%" }}
           onChange={(e) => setSearch(e.target.value)}
         />
+        {error && (
+          <Typography variant="body1" style={{ color: "red", marginBottom: 10, fontWeight: 500 }}>
+            {error}
+          </Typography>
+        )}
         <TableContainer component={Paper}>
           {loading ? (
             <LinearProgress style={{ backgroundColor: "gold" }} />
@@ -169,70 +189,78 @@ export default function CoinsTable() {
               </TableHead>
 
               <TableBody>
-                {handleSearch()
-                  .slice((page - 1) * 10, (page - 1) * 10 + 10)
-                  .map((row) => {
-                    const profit = row.price_change_percentage_24h > 0;
-                    return (
-                      <TableRow
-                        onClick={() => history.push(`/coins/${row.id}`)}
-                        className={classes.row}
-                        key={row.name}
-                      >
-                        <TableCell
-                          component="th"
-                          scope="row"
-                          style={{
-                            display: "flex",
-                            gap: 15,
-                          }}
+                {handleSearch().length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={4} align="center" style={{ padding: 20 }}>
+                      {loading ? "Loading data..." : "No data available"}
+                    </TableCell>
+                  </TableRow>
+                ) : (
+                  handleSearch()
+                    .slice((page - 1) * 10, (page - 1) * 10 + 10)
+                    .map((row) => {
+                      const profit = row.price_change_percentage_24h > 0;
+                      return (
+                        <TableRow
+                          onClick={() => history.push(`/coins/${row.id}`)}
+                          className={classes.row}
+                          key={row.name}
                         >
-                          <img
-                            src={row?.image}
-                            alt={row.name}
-                            height="50"
-                            style={{ marginBottom: 10 }}
-                          />
-                          <div
-                            style={{ display: "flex", flexDirection: "column" }}
+                          <TableCell
+                            component="th"
+                            scope="row"
+                            style={{
+                              display: "flex",
+                              gap: 15,
+                            }}
                           >
-                            <span
-                              style={{
-                                textTransform: "uppercase",
-                                fontSize: 22,
-                              }}
+                            <img
+                              src={row?.image || "https://placehold.co/50x50.png"}
+                              alt={row.name || "Unknown"}
+                              height="50"
+                              style={{ marginBottom: 10 }}
+                            />
+                            <div
+                              style={{ display: "flex", flexDirection: "column" }}
                             >
-                              {row.symbol}
-                            </span>
-                            <span style={{ color: "darkgrey" }}>
-                              {row.name}
-                            </span>
-                          </div>
-                        </TableCell>
-                        <TableCell align="right">
-                          {symbol}{" "}
-                          {numberWithCommas(row.current_price.toFixed(2))}
-                        </TableCell>
-                        <TableCell
-                          align="right"
-                          style={{
-                            color: profit > 0 ? "rgb(14, 203, 129)" : "red",
-                            fontWeight: 500,
-                          }}
-                        >
-                          {profit && "+"}
-                          {row.price_change_percentage_24h.toFixed(2)}%
-                        </TableCell>
-                        <TableCell align="right">
-                          {symbol}{" "}
-                          {numberWithCommas(
-                            row.market_cap.toString().slice(0, -6)
-                          )}
-                          M
-                        </TableCell>
-                      </TableRow>
-                    );
-                  })}
+                              <span
+                                style={{
+                                  textTransform: "uppercase",
+                                  fontSize: 22,
+                                }}
+                              >
+                                {row?.symbol?.toUpperCase() || "N/A"}
+                              </span>
+                              <span style={{ color: "darkgrey" }}>
+                                {row?.name || "Unknown"}
+                              </span>
+                            </div>
+                          </TableCell>
+                          <TableCell align="right">
+                            {symbol}{" "}
+                            {numberWithCommas(row.current_price.toFixed(2))}
+                          </TableCell>
+                          <TableCell
+                            align="right"
+                            style={{
+                              color: profit > 0 ? "rgb(14, 203, 129)" : "red",
+                              fontWeight: 500,
+                            }}
+                          >
+                            {profit && "+"}
+                            {row.price_change_percentage_24h.toFixed(2)}%
+                          </TableCell>
+                          <TableCell align="right">
+                            {symbol}{" "}
+                            {numberWithCommas(
+                              row.market_cap.toString().slice(0, -6)
+                            )}
+                            M
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })
+                )}
               </TableBody>
             </Table>
           )}
