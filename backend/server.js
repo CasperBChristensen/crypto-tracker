@@ -81,52 +81,52 @@ app.get("/api/coins", async (req, res) => {
 });
 
 // 2. Single coin details
-// app.get("/api/coin/:id", async (req, res) => {
-//   const { id } = req.params;
-//   const { currency = "usd" } = req.query;
-//   const key = `coin_${id}_${currency}`;
-//   const cached = getCache(key);
+app.get("/api/coin/:id", async (req, res) => {
+  const { id } = req.params;
+  const { currency = "usd" } = req.query;
+  const key = `coin_${id}_${currency}`;
+  const cached = getCache(key);
 
-//   if (cached) {
-//     console.log(`Serving coin details from cache (${id}, ${currency})`);
-//     return res.json(cached);
-//   }
+  if (cached) {
+    console.log(`Serving coin details from cache (${id}, ${currency})`);
+    return res.json(cached);
+  }
 
-//   try {
-//     const url = `https://api.coingecko.com/api/v3/coins/${id}?localization=false&tickers=false&market_data=true&community_data=false&developer_data=false&sparkline=false`;
-//     const response = await fetch(url);
-//     const data = await response.json();
-//     setCache(key, data, 10 * 60 * 1000); // cache 10 min
-//     res.json(data);
-//     console.log(`Fetched coin details from API (${id}, ${currency})`);
-//   } catch (err) {
-//     res.status(500).json({ error: "Failed to fetch coin details" });
-//   }
-// });
+  try {
+    const url = `https://api.coingecko.com/api/v3/coins/${id}?localization=false&tickers=false&market_data=true&community_data=false&developer_data=false&sparkline=false`;
+    const response = await fetch(url);
+    const data = await response.json();
+    setCache(key, data, 10 * 60 * 1000); // cache 10 min
+    res.json(data);
+    console.log(`Fetched coin details from API (${id}, ${currency})`);
+  } catch (err) {
+    res.status(500).json({ error: "Failed to fetch coin details" });
+  }
+});
 
 // 3. Coin history
-// app.get("/api/coin/:id/history", async (req, res) => {
-//   const { id } = req.params;
-//   const { days = 30, currency = "usd" } = req.query;
-//   const key = `coin_${id}_history_${currency}_${days}`;
-//   const cached = getCache(key);
+app.get("/api/coin/:id/history", async (req, res) => {
+  const { id } = req.params;
+  const { days = 30, currency = "usd" } = req.query;
+  const key = `coin_${id}_history_${currency}_${days}`;
+  const cached = getCache(key);
 
-//   if (cached) {
-//     console.log(`Serving coin history from cache (${id}, ${currency}, ${days})`);
-//     return res.json(cached);
-//   }
+  if (cached) {
+    console.log(`Serving coin history from cache (${id}, ${currency}, ${days})`);
+    return res.json(cached);
+  }
 
-//   try {
-//     const url = `https://api.coingecko.com/api/v3/coins/${id}/market_chart?vs_currency=${currency}&days=${days}`;
-//     const response = await fetch(url);
-//     const data = await response.json();
-//     setCache(key, data, 10 * 60 * 1000); // cache 10 min
-//     res.json(data);
-//     console.log(`Fetched coin history from API (${id}, ${currency}, ${days})`);
-//   } catch (err) {
-//     res.status(500).json({ error: "Failed to fetch coin history" });
-//   }
-// });
+  try {
+    const url = `https://api.coingecko.com/api/v3/coins/${id}/market_chart?vs_currency=${currency}&days=${days}`;
+    const response = await fetch(url);
+    const data = await response.json();
+    setCache(key, data, 10 * 60 * 1000); // cache 10 min
+    res.json(data);
+    console.log(`Fetched coin history from API (${id}, ${currency}, ${days})`);
+  } catch (err) {
+    res.status(500).json({ error: "Failed to fetch coin history" });
+  }
+});
 
 // 4. Trending coins
 app.get("/api/trending", async (req, res) => {
