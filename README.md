@@ -1,1 +1,1 @@
-**This is a test for GitHub pages
+Simple crypto tracking website with backend for retrieval of crypto information and local caching
