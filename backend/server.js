@@ -17,8 +17,9 @@ app.use(express.json());
 
 // Simple in-memory cache
 const cache = new Map();
+const requestStats = { total: 0, cached: 0, apiCalls: 0, lastReset: Date.now() };
 
-function setCache(key, data, ttl = 5 * 60 * 1000) {
+function setCache(key, data, ttl = 10 * 60 * 1000) { // default 10 min
   cache.set(key, { data, expiry: Date.now() + ttl });
 }
 
@@ -32,28 +33,48 @@ function getCache(key) {
   return entry.data;
 }
 
-async function fetchWithCache(url, cacheKey, ttl, res) {
+async function fetchWithRetry(url, retries = 3, backoff = 2000) {
+  for (let i = 0; i < retries; i++) {
+    try {
+      const response = await fetch(url);
+
+      if (response.status === 429) {
+        console.warn(`Rate limited by API. Retrying in ${backoff / 1000} seconds...`);
+        await new Promise(res => setTimeout(res, backoff));
+        backoff *= 2;
+        continue;
+      }
+
+      if (!response.ok) throw new Error(`API request failed with status: ${response.status}`);
+
+      return await response.json();
+    } catch (err) {
+      if (i === retries - 1) throw err;
+      await new Promise(res => setTimeout(res, backoff));
+      backoff *= 2;
+    }
+  }
+}
+
+async function fetchWithCache(url, cacheKey, ttl) {
   const cached = getCache(cacheKey);
+  if (cached) {
+    console.log(`Serving ${cacheKey} from cache`);
+    return cached;
+  }
 
   try {
-    const response = await fetch(url);
-
-    if (!response.ok) {
-      throw new Error(`API request failed with status ${response.status}`);
-    }
-
-    const data = await response.json();
+    const data = await fetchWithRetry(url);
     setCache(cacheKey, data, ttl);
     return data;
   } catch (err) {
     console.error(`Error fetching ${url}:`, err);
-
+    const cached = getCache(cacheKey);
     if (cached) {
       console.warn(`Serving stale cache for ${cacheKey}`);
       return cached;
     }
-
-    return { error: "Data not available"}
+    throw err;
   }
 }
 
@@ -61,6 +82,7 @@ async function fetchWithCache(url, cacheKey, ttl, res) {
 
 // General coin prices
 app.get("/api/coins", async (req, res) => {
+  requestStats.total++;
   const { currency = "usd" } = req.query;
   const key = `coins_${currency}`;
   const cached = getCache(key);
@@ -72,7 +94,7 @@ app.get("/api/coins", async (req, res) => {
   }
 
   try {
-    const data = await fetchWithCache(url, key, 2 * 60 * 1000, res); // cache 2 min
+    const data = await fetchWithCache(url, key, 2 * 60 * 1000); // cache 2 min
     res.json(data);
     console.log(`Fetched prices from API (${currency})`);
   } catch (err) {
@@ -82,6 +104,7 @@ app.get("/api/coins", async (req, res) => {
 
 // 2. Single coin details
 app.get("/api/coin/:id", async (req, res) => {
+  requestStats.total++;
   const { id } = req.params;
   const { currency = "usd" } = req.query;
   const key = `coin_${id}_${currency}`;
@@ -149,6 +172,37 @@ app.get("/api/trending", async (req, res) => {
   }
 });
 
+// 5. Request stats
+app.get("/api/stats", (req, res) => {
+  const hitrate = requestStats.total ? ((requestStats.cached / requestStats.total) * 100).toFixed(2) : 0;
+
+  res.json({
+    request: {
+      totalRequests: requestStats.total,
+      cachedResponses: requestStats.cached,
+      apiCalls: requestStats.apiCalls,
+      cacheHitRate: `${hitrate}%`
+    },
+    cache: {
+      size: cache.size,
+      keys: Array.from(cache.keys())
+    },
+    uptime: {
+      hours: ((Date.now() - requestStats.lastReset) / 1000 * 60 * 60).toFixed(2),
+      lastReset: new Date(requestStats.lastReset).toISOString()
+    }
+  });
+}); 
+
+// 6. Clear cache (for testing)
+app.post("/api/clear-cache", (req, res) => {
+  const startSize = cache.size;
+  cache.clear();
+  res.json({
+    message: `Cache cleared`,
+    clearedEntries: startSize
+  });
+});
 
 // Serve frontend (Production)
 const frontendBuildPath = path.join(__dirname, "../frontend/build");
