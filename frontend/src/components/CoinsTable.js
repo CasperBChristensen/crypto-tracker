@@ -121,14 +121,6 @@ export default function CoinsTable() {
     return filteredData;
   };
   
-  // const handleSearch = () => {
-  //   return coins.filter(
-  //     (coin) =>
-  //       coin.name.toLowerCase().includes(search) ||
-  //       coin.symbol.toLowerCase().includes(search)
-  //   );
-  // };
-
   const handleSort = (field) => {
     const isAsc = sorting.field === field && sorting.order === "asc";
     setSorting({ field: field, order: isAsc ? "desc" : "asc" });
