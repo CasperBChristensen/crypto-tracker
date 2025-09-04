@@ -8,9 +8,8 @@ import {
   Typography,
 } from "@material-ui/core";
 import SelectButton from "./SelectButton";
-import { chartDays } from "../config/data";
+import { chartDays , COIN_HISTORY } from "../config";
 import { CryptoState } from "../CryptoContext";
-import { COIN_HISTORY } from "../config";
 
 const CoinInfo = ({ coin }) => {
   const [historicData, setHistoricData] = useState([]);

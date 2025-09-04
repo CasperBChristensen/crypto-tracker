@@ -15,3 +15,22 @@ export const COIN_HISTORY = (id, days, currency) =>
 
 export const TRENDING_COINS = (currency) =>
   `${BACKEND_URL}/api/trending?currency=${currency}`;
+
+export const chartDays = [
+  {
+    label: "24 Hours",
+    value: 1,
+  },
+  {
+    label: "30 Days",
+    value: 30,
+  },
+  {
+    label: "3 Months",
+    value: 90,
+  },
+  {
+    label: "1 Year",
+    value: 365,
+  },
+];
