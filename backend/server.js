@@ -39,9 +39,6 @@ function getCache(key) {
 
 function buildUrl(baseUrl, params) {
   const url = new URL(baseUrl);
-  if (COINGECKO_API_KEY) {
-    url.searchParams.append('x_cg_pro_api_key', COINGECKO_API_KEY);
-  }
   Object.keys(params).forEach(key => {
     url.searchParams.append(key, params[key]);
   });
@@ -51,7 +48,12 @@ function buildUrl(baseUrl, params) {
 async function fetchWithRetry(url, retries = 3, backoff = 2000) {
   for (let i = 0; i < retries; i++) {
     try {
-      const response = await fetch(url);
+      const headers = {};
+      if (COINGECKO_API_KEY && url.includes('api.coingecko.com')) {
+        headers['x-cg-demo-api-key'] = COINGECKO_API_KEY;
+      }
+
+      const response = await fetch(url, { headers });
 
       if (response.status === 429) {
         console.warn(`Rate limited. Retrying in ${backoff}ms... (Attempt ${i + 1}/${retries})`);
@@ -167,7 +169,7 @@ app.get("/api/trending", async (req, res) => {
   const key = `trending_${currency}`;
   const url = buildUrl('https://api.coingecko.com/api/v3/coins/markets', {
     vs_currency: currency,
-    order: 'gecko_desc',
+    order: 'market_cap_desc',
     per_page: 10,
     page: 1,
     sparkline: 'false',
@@ -198,7 +200,7 @@ app.get("/api/stats", (req, res) => {
       keys: Array.from(cache.keys())
     },
     uptime: {
-      hours: ((Date.now() - requestStats.lastReset) / 1000 * 60 * 60).toFixed(2),
+      hours: ((Date.now() - requestStats.lastReset) / (1000 * 60 * 60)).toFixed(2),
       lastReset: new Date(requestStats.lastReset).toISOString()
     }
   });
